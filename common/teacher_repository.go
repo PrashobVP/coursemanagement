@@ -28,4 +28,10 @@ func (r *TeacherRepository) GetTeacherByID(id uint) (*mysqldbmodels.Teacher, err
 	return &teacher, nil
 }
 
-// Implement other CRUD operations as needed
+func (r *TeacherRepository) UpdateTeacher(teacher *mysqldbmodels.Teacher) error {
+	return r.DB.Save(teacher).Error
+}
+
+func (r *TeacherRepository) DeleteTeacher(id uint) error {
+	return r.DB.Delete(&mysqldbmodels.Teacher{}, id).Error
+}

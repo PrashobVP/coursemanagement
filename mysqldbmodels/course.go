@@ -7,13 +7,15 @@ import "fmt"
 type CourseRepository interface {
 	Createcourse(course *Course) error
 	GetcourseByID(id uint) (*Course, error)
+	Updatecourse(course *Course) error
+	Deletecourse(id uint) error
 	// Add other methods as needed
 }
 
 type Course struct {
-	ID   uint   `gorm:"primaryKey"`
+	ID        uint `gorm:"primaryKey"`
 	TeacherID int
-	Name string
+	Name      string
 }
 
 func MainCourse(repo CourseRepository) {
@@ -30,6 +32,19 @@ func MainCourse(repo CourseRepository) {
 		panic("failed to retrieve course")
 	}
 	fmt.Printf("Retrieved course: %+v\n", *retrievedCourse)
+
+	// Update course
+	retrievedCourse.Name = "Golang Updated"
+	if err := repo.Updatecourse(retrievedCourse); err != nil {
+		panic("failed to update course")
+	}
+	fmt.Println("Course updated successfully")
+
+	// Delete course
+	if err := repo.Deletecourse(course.ID); err != nil {
+		panic("failed to delete course")
+	}
+	fmt.Println("Course deleted successfully")
 
 	// Add other CRUD operations
 }
