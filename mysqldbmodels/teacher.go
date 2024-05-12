@@ -1,45 +1,30 @@
+// mysqldbmodels/teacher.go
+
 package mysqldbmodels
 
 import "fmt"
 
-type TeacherRepository interface {
-    CreateTeacher(teacher *Teacher) error
-    GetTeacherByID(id uint) (*Teacher, error)
-    UpdateTeacher(teacher *Teacher) error
-    DeleteTeacher(id uint) error
-    // Add other methods as needed
-}
-
 type Teacher struct {
-    ID   uint   `gorm:"primaryKey"`
-    Name string
+	ID   int    `gorm:"column:id;primaryKey"`
+	Name string `gorm:"column:name;"`
 }
 
-func MainTeacher(repo TeacherRepository) {
-    // Create a new teacher
-    teacher := &Teacher{Name: "Shubham"}
-    if err := repo.CreateTeacher(teacher); err != nil {
-        panic("failed to create teacher")
-    }
-    fmt.Println("Teacher created successfully")
+func (client *DBClient) CreateTeacherRow() error {
+	fmt.Println("Started Teacher table creation")
 
-    // Read teacher
-    retrievedTeacher, err := repo.GetTeacherByID(teacher.ID)
-    if err != nil {
-        panic("failed to retrieve teacher")
-    }
-    fmt.Printf("Retrieved Teacher: %+v\n", *retrievedTeacher)
+	var t = Teacher{ID: 1, Name: "Shubam"}
 
-    // Update teacher
-    retrievedTeacher.Name = "Shubham Updated"
-    if err := repo.UpdateTeacher(retrievedTeacher); err != nil {
-        panic("failed to update teacher")
-    }
-    fmt.Println("Teacher updated successfully")
+	var err error
 
-    // Delete teacher
-    if err := repo.DeleteTeacher(teacher.ID); err != nil {
-        panic("failed to delete teacher")
-    }
-    fmt.Println("Teacher deleted successfully")
+	db := client.Conn
+	tx := db.Begin()
+
+	if err = tx.Create(&t).Error; err != nil {
+		//utils.Logger.Error("error while creating a position row from db", zap.Error(err))
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	//utils.Logger.Warn("successfully created a position row in db")
+	return err
 }

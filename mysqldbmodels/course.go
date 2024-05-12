@@ -4,47 +4,28 @@ package mysqldbmodels
 
 import "fmt"
 
-type CourseRepository interface {
-	Createcourse(course *Course) error
-	GetcourseByID(id uint) (*Course, error)
-	Updatecourse(course *Course) error
-	Deletecourse(id uint) error
-	// Add other methods as needed
-}
-
 type Course struct {
-	ID        uint `gorm:"primaryKey"`
-	TeacherID int
-	Name      string
+	ID        int    `gorm:"column:id;primaryKey"`
+	TeacherID int    `gorm:"column:teacher_id;"`
+	Name      string `gorm:"column:name;"`
 }
 
-func MainCourse(repo CourseRepository) {
-	// Create a new course
-	course := &Course{Name: "Golang"}
-	if err := repo.Createcourse(course); err != nil {
-		panic("failed to create studnet")
-	}
-	fmt.Println("course created successfully")
+func (client *DBClient) CreateCourseRow() error {
+	fmt.Println("Started Course table creation")
 
-	// Read course
-	retrievedCourse, err := repo.GetcourseByID(course.ID)
-	if err != nil {
-		panic("failed to retrieve course")
-	}
-	fmt.Printf("Retrieved course: %+v\n", *retrievedCourse)
+	var c = Course{ID: 1, Name: "golang", TeacherID: 1}
 
-	// Update course
-	retrievedCourse.Name = "Golang Updated"
-	if err := repo.Updatecourse(retrievedCourse); err != nil {
-		panic("failed to update course")
-	}
-	fmt.Println("Course updated successfully")
+	var err error
 
-	// Delete course
-	if err := repo.Deletecourse(course.ID); err != nil {
-		panic("failed to delete course")
-	}
-	fmt.Println("Course deleted successfully")
+	db := client.Conn
+	tx := db.Begin()
 
-	// Add other CRUD operations
+	if err = tx.Create(&c).Error; err != nil {
+		//utils.Logger.Error("error while creating a position row from db", zap.Error(err))
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	//utils.Logger.Warn("successfully created a position row in db")
+	return err
 }
