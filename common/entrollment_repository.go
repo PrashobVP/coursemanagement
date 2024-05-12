@@ -11,16 +11,6 @@ type entrollmentRepository struct {
 	DB *gorm.DB
 }
 
-// Createcourse implements mysqldbmodels.CourseRepository.
-func (r *entrollmentRepository) Createcourse(course *mysqldbmodels.Course) error {
-	panic("unimplemented")
-}
-
-// GetcourseByID implements mysqldbmodels.CourseRepository.
-func (r *entrollmentRepository) GetcourseByID(id uint) (*mysqldbmodels.Course, error) {
-	panic("unimplemented")
-}
-
 func NewentrollmentRepository(db *gorm.DB) *entrollmentRepository {
 	return &entrollmentRepository{DB: db}
 }
@@ -38,4 +28,10 @@ func (r *entrollmentRepository) GetentrollmentByID(id uint) (*mysqldbmodels.Entr
 	return &entrollment, nil
 }
 
-// Implement other CRUD operations as needed
+func (r *entrollmentRepository) Updateentrollment(entrollment *mysqldbmodels.Entrollment) error {
+	return r.DB.Save(entrollment).Error
+}
+
+func (r *entrollmentRepository) Deleteentrollment(id uint) error {
+	return r.DB.Delete(&mysqldbmodels.Entrollment{}, id).Error
+}

@@ -28,4 +28,10 @@ func (r *courseRepository) GetcourseByID(id uint) (*mysqldbmodels.Course, error)
 	return &course, nil
 }
 
-// Implement other CRUD operations as needed
+func (r *courseRepository) Updatecourse(course *mysqldbmodels.Course) error {
+	return r.DB.Save(course).Error
+}
+
+func (r *courseRepository) Deletecourse(id uint) error {
+	return r.DB.Delete(&mysqldbmodels.Course{}, id).Error
+}
