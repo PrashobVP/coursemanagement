@@ -24,7 +24,7 @@ func MainCourse(repo CourseRepository) {
 	}
 	fmt.Println("course created successfully")
 
-	// Read teacher
+	// Read course
 	retrievedCourse, err := repo.GetcourseByID(course.ID)
 	if err != nil {
 		panic("failed to retrieve course")
