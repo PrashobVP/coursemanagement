@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"github.com/9500073161/coursemanagement/common"
 	"github.com/9500073161/coursemanagement/mysqldbmodels"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -20,4 +21,17 @@ func InitializeDatabase() {
 	db.AutoMigrate(&mysqldbmodels.Student{})
 	db.AutoMigrate(&mysqldbmodels.Course{})
 	db.AutoMigrate(&mysqldbmodels.Entrollment{})
+
+	// Initialize repository
+	teacherRepo := common.NewTeacherRepository(db)
+	studentRepo := common.NewStudentRepository(db)
+	courseRepo := common.NewcourseRepository(db)
+	entrollmentRepo := common.NewentrollmentRepository(db)
+
+
+	// Call Mainsubmain function
+	mysqldbmodels.MainTeacher(teacherRepo)
+	mysqldbmodels.MainStudent(studentRepo)
+	mysqldbmodels.MainCourse(courseRepo)
+	mysqldbmodels.MainEntrollment(entrollmentRepo)
 }
