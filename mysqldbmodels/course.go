@@ -2,7 +2,11 @@
 
 package mysqldbmodels
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/9500073161/coursemanagement/common"
+)
 
 type Course struct {
 	ID        int    `gorm:"column:id;primaryKey"`
@@ -10,10 +14,10 @@ type Course struct {
 	Name      string `gorm:"column:name;"`
 }
 
-func (client *DBClient) CreateCourseRow() error {
+func (client *DBClient) CreateCourseRow(c1 common.Course) error {
 	fmt.Println("Started Course table creation")
 
-	var c = Course{ID: 1, Name: "golang", TeacherID: 1}
+	var c = Course{ID: c1.ID, Name: c1.Name, TeacherID: c1.TeacherID}
 
 	var err error
 
@@ -28,4 +32,5 @@ func (client *DBClient) CreateCourseRow() error {
 	tx.Commit()
 	//utils.Logger.Warn("successfully created a position row in db")
 	return err
+
 }

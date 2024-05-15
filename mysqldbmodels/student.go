@@ -2,17 +2,21 @@
 
 package mysqldbmodels
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/9500073161/coursemanagement/common"
+)
 
 type Student struct {
 	ID   int    `gorm:"column:id;primaryKey"`
 	Name string `gorm:"column:name;"`
 }
 
-func (client *DBClient) CreateStudentRow() error {
+func (client *DBClient) CreateStudentRow(s1 common.Student) error {
 	fmt.Println("Started Student table creation")
 
-	var s = Student{ID:1, Name: "Kanchi"}
+	var s = Student{ID: s1.ID, Name: s1.Name}
 
 	var err error
 

@@ -2,7 +2,11 @@
 
 package mysqldbmodels
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/9500073161/coursemanagement/common"
+)
 
 type Entrollment struct {
 	ID   int    `gorm:"column:id;primaryKey"`
@@ -10,10 +14,10 @@ type Entrollment struct {
 	StudentID int `gorm:"column:student_id;"`
 }
 
-func (client *DBClient) CreateEntrollmentRow() error {
+func (client *DBClient) CreateEntrollmentRow(e1 common.Entrollment) error {
 	fmt.Println("Started Entrollment table creation")
 
-	var e = Entrollment{ID: 1, CourseID: 1, StudentID: 1}
+	var e = Entrollment{ID: e1.ID, CourseID: e1.CourseID, StudentID: e1.StudentID}
 
 	var err error
 
