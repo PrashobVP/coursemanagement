@@ -33,3 +33,22 @@ func (client *DBClient) CreateEntrollmentRow(e1 common.Entrollment) error {
 	//utils.Logger.Warn("successfully created a position row in db")
 	return err
 }
+
+//getallentrollment
+
+func (client *DBClient) GetEntrollmentRaw() ([]Entrollment,error) {
+    var entrollments []Entrollment
+
+	fmt.Println("Get all teachers from DB")
+	query := `select 
+			  *
+			from entrollments`
+	
+	db := client.Conn
+	
+	if err := db.Raw(query).Find(&entrollments).Error; err != nil {
+		return entrollments, fmt.Errorf("error while reading rows from positions table,err: %s", err.Error())
+	}
+	return entrollments, nil
+}
+

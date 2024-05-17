@@ -34,3 +34,23 @@ func (client *DBClient) CreateCourseRow(c1 common.Course) error {
 	return err
 
 }
+//getallcourses
+
+func (client *DBClient) GetCourseRaw() ([]Course,error) {
+    var courses []Course
+	fmt.Println("Get all course from DB")
+	query := `select 
+			  *
+			from courses`
+	
+	db := client.Conn
+	
+	if err := db.Raw(query).Find(&courses).Error; err != nil {
+		return courses, fmt.Errorf("error while reading rows from positions table,err: %s", err.Error())
+	}
+	return courses, nil
+	
+
+
+}
+
