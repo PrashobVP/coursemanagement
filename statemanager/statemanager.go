@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	cm "github.com/9500073161/coursemanagement/common"
+	"github.com/9500073161/coursemanagement/mysqldbmodels"
 	dbmodels "github.com/9500073161/coursemanagement/mysqldbmodels"
 )
 
@@ -36,4 +37,20 @@ func (sm *StateManager) CreateTeacherEntry(t1 cm.Teacher) error {
 
 func (sm *StateManager) CreateEntrollmentEntry(e1 cm.Entrollment) error {
 	return sm.db.CreateEntrollmentRow(e1)
+}
+
+func (sm *StateManager) GetAllCourses() ([]mysqldbmodels.Course, error) {
+	return sm.db.GetCourseRaw()
+}
+
+func (sm *StateManager) GetAllStudents() ([]mysqldbmodels.Student, error) {
+	return sm.db.GetStudentRaw()
+}
+
+func (sm *StateManager) GetAllTeachers() ([]mysqldbmodels.Teacher, error) {
+	return sm.db.GetTeacherRaw()
+}
+
+func (sm *StateManager) GetAllEntrollments() ([]mysqldbmodels.Entrollment, error) {
+	return sm.db.GetEntrollmentRaw()
 }

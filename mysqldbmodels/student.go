@@ -32,3 +32,21 @@ func (client *DBClient) CreateStudentRow(s1 common.Student) error {
 	//utils.Logger.Warn("successfully created a position row in db")
 	return err
 }
+
+//getallstudents
+
+func (client *DBClient) GetStudentRaw() ([]Student,error) {
+    var students []Student
+
+	fmt.Println("Get all course from DB")
+	query := `select 
+			  *
+			from students`
+	
+	db := client.Conn
+	
+	if err := db.Raw(query).Find(&students).Error; err != nil {
+		return students, fmt.Errorf("error while reading rows from positions table,err: %s", err.Error())
+	}
+	return students, nil
+}
