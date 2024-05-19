@@ -17,6 +17,11 @@ type TeacherHandler struct {
 	StateManager *statemanager.StateManager
 }
 
+type UpdateTeacherRequest struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 // NewCourseHandler initializes a new StudentHandler
 func NewTeacherHandler(sm *statemanager.StateManager) *TeacherHandler {
 	return &TeacherHandler{StateManager: sm}
@@ -31,8 +36,8 @@ func (ch *TeacherHandler) HandlersTeacher(w http.ResponseWriter, r *http.Request
 		ch.CreateTeacher(w,r)
 	case http.MethodGet:
 		ch.GetAllteacher(w,r)
-	// case http.MethodPut:
-	// 	ch.Update(w,r)
+	case http.MethodPut:
+	 	ch.TeacherUpdate(w,r)
 	// case http.MethodDelete:
 	// 	ch.Delete(w,r)
 	default :
@@ -82,24 +87,36 @@ func (ch *TeacherHandler) GetAllteacher(w http.ResponseWriter, r *http.Request) 
 	w.Write(response)
 }
 
-// // Update handles updating an existing course
-// func (ch *CourseHandler) Update(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of update operation
+// Update handles updating an existing Teacher
+func (ch *TeacherHandler) TeacherUpdate(w http.ResponseWriter, r *http.Request) {
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	var req UpdateTeacherRequest
+	// Decode the JSON request body into a course object
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
 
-// 	// Do something with the course data (e.g., update it in the database)
-// 	fmt.Printf("Update course: %+v\n", course)
-// 	ch.StateManager.UpdateCourse(course)
-// 	// Respond with a success message
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Course updated successfully")
-// }
+	// Perform the update operation using the StateManager
+	teachers, err := ch.StateManager.UpdateAllTeachers(req.ID, req.Name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	response, err := json.Marshal(teachers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+	fmt.Fprintf(w, "teachers updated successfully")
+
+}
+
 
 // // Delete handles deleting a course
 // func (ch *CourseHandler) Delete(w http.ResponseWriter, r *http.Request) {

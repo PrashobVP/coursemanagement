@@ -9,12 +9,19 @@ import (
 	"net/http"
 
 	"github.com/9500073161/coursemanagement/common"
+	
 	"github.com/9500073161/coursemanagement/statemanager"
 )
 
 // CourseHandler handles CRUD operations for courses
 type CourseHandler struct {
 	StateManager *statemanager.StateManager
+}
+
+type UpdateCourseRequest struct {
+	ID int  `json:"id"`
+	Name      string `json:"name"`
+	TeacherID int    `json:"teacher_id"`
 }
 
 // NewCourseHandler initializes a new CourseHandler
@@ -31,8 +38,8 @@ func (ch *CourseHandler) HandlersCourse(w http.ResponseWriter, r *http.Request) 
 		ch.CreateCourse(w,r)
 	case http.MethodGet:
 		ch.GetAllCourse(w,r)
-	// case http.MethodPut:
-	// 	ch.Update(w,r)
+	case http.MethodPut:
+	    ch.CourseUpdate(w,r)
 	// case http.MethodDelete:
 	// 	ch.Delete(w,r)
 	default :
@@ -82,24 +89,37 @@ func (ch *CourseHandler) GetAllCourse(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
-// // Update handles updating an existing course
-// func (ch *CourseHandler) Update(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of update operation
+// Update handles updating an existing course
+func (ch *CourseHandler) CourseUpdate(w http.ResponseWriter, r *http.Request) {
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	var req UpdateCourseRequest
+    // Decode the JSON request body into a course object
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
 
-// 	// Do something with the course data (e.g., update it in the database)
-// 	fmt.Printf("Update course: %+v\n", course)
-// 	ch.StateManager.UpdateCourse(course)
-// 	// Respond with a success message
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Course updated successfully")
-// }
+    // Perform the update operation using the StateManager
+    courses, err := ch.StateManager.UpdateAllCourses(req.ID, req.Name,req.TeacherID)
+	if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+	response, err := json.Marshal(courses)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+	w.Write(response)
+    
+}
+
+
+
 
 // // Delete handles deleting a course
 // func (ch *CourseHandler) Delete(w http.ResponseWriter, r *http.Request) {

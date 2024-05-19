@@ -17,6 +17,11 @@ type StudentHandler struct {
 	StateManager *statemanager.StateManager
 }
 
+type UpdateStudentRequest struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 // NewCourseHandler initializes a new StudentHandler
 func NewStudentHandler(sm *statemanager.StateManager) *StudentHandler {
 	return &StudentHandler{StateManager: sm}
@@ -26,20 +31,20 @@ func NewStudentHandler(sm *statemanager.StateManager) *StudentHandler {
 
 func (ch *StudentHandler) HandlersStudent(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-    switch r.Method{ 
+	switch r.Method {
 	case http.MethodPost:
-		ch.CreateStudent(w,r)
+		ch.CreateStudent(w, r)
 	case http.MethodGet:
-		ch.GetAllStudent(w,r)
-	// case http.MethodPut:
-	// 	ch.Update(w,r)
+		ch.GetAllStudent(w, r)
+	case http.MethodPut:
+		ch.StudentUpdate(w, r)
 	// case http.MethodDelete:
 	// 	ch.Delete(w,r)
-	default :
+	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		return				
+		return
 	}
-	
+
 }
 
 func (ch *StudentHandler) CreateStudent(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +71,6 @@ func (ch *StudentHandler) GetAllStudent(w http.ResponseWriter, r *http.Request) 
 
 	// Get all courses from the state manager
 
-	
 	students, err := ch.StateManager.GetAllStudents()
 
 	// Convert courses to JSON
@@ -80,26 +84,38 @@ func (ch *StudentHandler) GetAllStudent(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
+	fmt.Fprintf(w, "Students Get successfully")
 }
 
-// // Update handles updating an existing course
-// func (ch *CourseHandler) Update(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of update operation
+// Update handles updating an existing course
+func (ch *StudentHandler) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	var req UpdateStudentRequest
+	// Decode the JSON request body into a course object
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
 
-// 	// Do something with the course data (e.g., update it in the database)
-// 	fmt.Printf("Update course: %+v\n", course)
-// 	ch.StateManager.UpdateCourse(course)
-// 	// Respond with a success message
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Course updated successfully")
-// }
+	// Perform the update operation using the StateManager
+	students, err := ch.StateManager.UpdateAllStudents(req.ID, req.Name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	response, err := json.Marshal(students)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+	fmt.Fprintf(w, "Student updated successfully")
+
+}
 
 // // Delete handles deleting a course
 // func (ch *CourseHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -112,10 +128,9 @@ func (ch *StudentHandler) GetAllStudent(w http.ResponseWriter, r *http.Request) 
 // 		return
 // 	}
 
-	// // Do something with the course data (e.g., delete it from the database)
-	// fmt.Printf("Delete course: %+v\n", course)
-	// ch.StateManager.DeleteCourse(course.ID) // Assuming course has an ID field
-	// // Respond with a success message
-	// w.WriteHeader(http.StatusOK)
-	// fmt.Fprintf(w, "Course deleted successfully")
-
+// // Do something with the course data (e.g., delete it from the database)
+// fmt.Printf("Delete course: %+v\n", course)
+// ch.StateManager.DeleteCourse(course.ID) // Assuming course has an ID field
+// // Respond with a success message
+// w.WriteHeader(http.StatusOK)
+// fmt.Fprintf(w, "Course deleted successfully")

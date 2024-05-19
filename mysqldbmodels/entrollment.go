@@ -52,3 +52,28 @@ func (client *DBClient) GetEntrollmentRaw() ([]Entrollment,error) {
 	return entrollments, nil
 }
 
+
+//update Entrollment
+
+func (client *DBClient) UpdateEntrollmentRaw(ID int, CourseID int, StudentID int) ([]Entrollment, error) {
+	var entrollments []Entrollment
+	fmt.Println("Updating Entrollment in DB")
+	query := `UPDATE entrollments
+	          SET course_id = ?, student_id = ?
+	          WHERE id = ?`
+
+	db := client.Conn
+
+	// Execute the raw SQL query with placeholders
+	if err := db.Exec(query, CourseID,StudentID, ID).Error; err != nil {
+		return entrollments, fmt.Errorf("error while updating teacher: %s", err.Error())
+	}
+
+	// Fetch the updated course to return it
+	if err := db.Where("id = ?", ID).First(&entrollments).Error; err != nil {
+		return entrollments, fmt.Errorf("error fetching updated teacher: %s", err.Error())
+	}
+
+	return entrollments, nil
+}
+
