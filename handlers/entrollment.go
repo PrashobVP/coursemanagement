@@ -17,6 +17,12 @@ type EntrollmentHandler struct {
 	StateManager *statemanager.StateManager
 }
 
+type UpdateEntrollmentRequest struct {
+	ID int  `json:"id"`
+	CourseID      int `json:"course_id"`
+	StudentID int    `json:"student_id"`
+}
+
 // NewCourseHandler initializes a new StudentHandler
 func NewEntrollmentHandler(sm *statemanager.StateManager) *EntrollmentHandler {
 	return &EntrollmentHandler{StateManager: sm}
@@ -31,8 +37,8 @@ func (ch *EntrollmentHandler) HandlersEntrollment(w http.ResponseWriter, r *http
 		ch.CreateEntrollment(w,r)
 	case http.MethodGet:
 		ch.GetAllEntrollment(w,r)
-	// case http.MethodPut:
-	// 	ch.Update(w,r)
+	case http.MethodPut:
+	 	ch.EntrollmentUpdate(w,r)
 	// case http.MethodDelete:
 	// 	ch.Delete(w,r)
 	default :
@@ -80,6 +86,36 @@ func (ch *EntrollmentHandler) GetAllEntrollment(w http.ResponseWriter, r *http.R
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
+}
+
+
+// Update handles updating an existing course
+func (ch *EntrollmentHandler) EntrollmentUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var req UpdateEntrollmentRequest
+    // Decode the JSON request body into a course object
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+    // Perform the update operation using the StateManager
+    entrollments, err := ch.StateManager.UpdateAllEntrollments(req.ID, req.CourseID,req.StudentID)
+	if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+	response, err := json.Marshal(entrollments)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with a success message
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+	w.Write(response)
+    
 }
 
 // // Update handles updating an existing course

@@ -54,3 +54,23 @@ func (sm *StateManager) GetAllTeachers() ([]mysqldbmodels.Teacher, error) {
 func (sm *StateManager) GetAllEntrollments() ([]mysqldbmodels.Entrollment, error) {
 	return sm.db.GetEntrollmentRaw()
 }
+
+func (sm *StateManager) UpdateAllCourses(ID int, Name string, TeacherID int) ([]mysqldbmodels.Course, error) {
+	
+	return sm.db.UpdateCourseRaw(ID, Name, TeacherID)
+}
+
+func (sm *StateManager) UpdateAllStudents(ID int, Name string) ([]mysqldbmodels.Student, error) {
+	
+	return sm.db.UpdateStudentRaw(ID, Name)
+}
+
+func (sm *StateManager) UpdateAllTeachers(ID int, Name string) ([]mysqldbmodels.Teacher, error) {
+	
+	return sm.db.UpdateTeacherRaw(ID, Name)
+}
+
+func (sm *StateManager) UpdateAllEntrollments(ID int, CourseID int, StudentID int) ([]mysqldbmodels.Entrollment, error) {
+	
+	return sm.db.UpdateEntrollmentRaw(ID,CourseID,StudentID)
+}

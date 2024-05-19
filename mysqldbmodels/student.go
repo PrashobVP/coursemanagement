@@ -35,18 +35,42 @@ func (client *DBClient) CreateStudentRow(s1 common.Student) error {
 
 //getallstudents
 
-func (client *DBClient) GetStudentRaw() ([]Student,error) {
-    var students []Student
+func (client *DBClient) GetStudentRaw() ([]Student, error) {
+	var students []Student
 
 	fmt.Println("Get all course from DB")
 	query := `select 
 			  *
 			from students`
-	
+
 	db := client.Conn
-	
+
 	if err := db.Raw(query).Find(&students).Error; err != nil {
 		return students, fmt.Errorf("error while reading rows from positions table,err: %s", err.Error())
 	}
+	return students, nil
+}
+
+//update student
+
+func (client *DBClient) UpdateStudentRaw(ID int, Name string) ([]Student, error) {
+	var students []Student
+	fmt.Println("Updating course in DB")
+	query := `UPDATE students
+	          SET name = ?
+	          WHERE id = ?`
+
+	db := client.Conn
+
+	// Execute the raw SQL query with placeholders
+	if err := db.Exec(query, Name, ID).Error; err != nil {
+		return students, fmt.Errorf("error while updating student: %s", err.Error())
+	}
+
+	// Fetch the updated course to return it
+	if err := db.Where("id = ?", ID).First(&students).Error; err != nil {
+		return students, fmt.Errorf("error fetching updated student: %s", err.Error())
+	}
+
 	return students, nil
 }
