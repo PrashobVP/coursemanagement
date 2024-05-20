@@ -74,3 +74,23 @@ func (sm *StateManager) UpdateAllEntrollments(ID int, CourseID int, StudentID in
 	
 	return sm.db.UpdateEntrollmentRaw(ID,CourseID,StudentID)
 }
+
+func (sm *StateManager) DeleteCourseID(ID int) ([]mysqldbmodels.Course, error) {
+	
+	return sm.db.DeleteCourseRaw(ID)
+}
+
+func (sm *StateManager) DeleteStudentID(ID int) ([]mysqldbmodels.Student, error) {
+	
+	return sm.db.DeleteStudentRaw(ID)
+}
+
+func (sm *StateManager) DeleteEntrollmentID(ID int) ([]mysqldbmodels.Entrollment, error) {
+	
+	return sm.db.DeleteEntrollmentRaw(ID)
+}
+
+func (sm *StateManager) DeleteTeacherID(ID int) ([]mysqldbmodels.Teacher, error) {
+	
+	return sm.db.DeleteTeacherRaw(ID)
+}
