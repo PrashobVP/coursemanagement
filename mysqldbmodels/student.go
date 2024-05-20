@@ -74,3 +74,27 @@ func (client *DBClient) UpdateStudentRaw(ID int, Name string) ([]Student, error)
 
 	return students, nil
 }
+
+//delete student
+
+func (client *DBClient) DeleteStudentRaw(ID int) ([]Student, error){
+
+	var students []Student
+	fmt.Println("Deleting Student in DB")
+	query := `DELETE FROM students WHERE id=?`
+
+	db := client.Conn
+
+	// Execute the raw SQL query with placeholders
+	if err := db.Exec(query,ID).Error; err != nil {
+		return students, fmt.Errorf("error while updating course: %s", err.Error())
+	}
+
+	// Fetch the updated course to return it
+	if err := db.Where("id = ?", ID).First(&students).Error; err != nil {
+		return students, fmt.Errorf("error fetching updated course: %s", err.Error())
+	}
+
+	return students, nil
+
+}

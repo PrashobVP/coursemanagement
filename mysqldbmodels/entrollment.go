@@ -77,3 +77,29 @@ func (client *DBClient) UpdateEntrollmentRaw(ID int, CourseID int, StudentID int
 	return entrollments, nil
 }
 
+
+//delete Entrollment
+
+
+
+func (client *DBClient) DeleteEntrollmentRaw(ID int) ([]Entrollment, error){
+
+	var entrollments []Entrollment
+	fmt.Println("Deleting entrollments in DB")
+	query := `DELETE FROM entrollments WHERE id=?`
+
+	db := client.Conn
+
+	// Execute the raw SQL query with placeholders
+	if err := db.Exec(query,ID).Error; err != nil {
+		return entrollments, fmt.Errorf("error while updating entrollments: %s", err.Error())
+	}
+
+	// Fetch the updated course to return it
+	if err := db.Where("id = ?", ID).First(&entrollments).Error; err != nil {
+		return entrollments, fmt.Errorf("error fetching updated entrollments: %s", err.Error())
+	}
+
+	return entrollments, nil
+
+}

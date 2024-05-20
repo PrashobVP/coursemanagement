@@ -39,8 +39,8 @@ func (ch *EntrollmentHandler) HandlersEntrollment(w http.ResponseWriter, r *http
 		ch.GetAllEntrollment(w,r)
 	case http.MethodPut:
 	 	ch.EntrollmentUpdate(w,r)
-	// case http.MethodDelete:
-	// 	ch.Delete(w,r)
+	case http.MethodDelete:
+	 	ch.EntrollmentDelete(w,r)
 	default :
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return				
@@ -118,40 +118,24 @@ func (ch *EntrollmentHandler) EntrollmentUpdate(w http.ResponseWriter, r *http.R
     
 }
 
-// // Update handles updating an existing course
-// func (ch *CourseHandler) Update(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of update operation
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+// Delete handles deleting a course
+func (ch *EntrollmentHandler) EntrollmentDelete(w http.ResponseWriter, r *http.Request) {
+	// Implementation of delete operation
 
-// 	// Do something with the course data (e.g., update it in the database)
-// 	fmt.Printf("Update course: %+v\n", course)
-// 	ch.StateManager.UpdateCourse(course)
-// 	// Respond with a success message
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Course updated successfully")
-// }
+	var entrollments common.Entrollment
+	err := json.NewDecoder(r.Body).Decode(&entrollments)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-// // Delete handles deleting a course
-// func (ch *CourseHandler) Delete(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of delete operation
+	// Do something with the course data (e.g., delete it from the database)
+	fmt.Printf("Delete entrollments: %+v\n", entrollments)
+	ch.StateManager.DeleteEntrollmentID(entrollments.ID) // Assuming course has an ID field
+	// Respond with a success message
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "entrollments deleted successfully")
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-	// // Do something with the course data (e.g., delete it from the database)
-	// fmt.Printf("Delete course: %+v\n", course)
-	// ch.StateManager.DeleteCourse(course.ID) // Assuming course has an ID field
-	// // Respond with a success message
-	// w.WriteHeader(http.StatusOK)
-	// fmt.Fprintf(w, "Course deleted successfully")
+}
 

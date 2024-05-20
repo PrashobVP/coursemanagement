@@ -38,8 +38,8 @@ func (ch *StudentHandler) HandlersStudent(w http.ResponseWriter, r *http.Request
 		ch.GetAllStudent(w, r)
 	case http.MethodPut:
 		ch.StudentUpdate(w, r)
-	// case http.MethodDelete:
-	// 	ch.Delete(w,r)
+	case http.MethodDelete:
+	 	ch.DeleteStudentIDs(w,r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -117,20 +117,21 @@ func (ch *StudentHandler) StudentUpdate(w http.ResponseWriter, r *http.Request) 
 
 }
 
-// // Delete handles deleting a course
-// func (ch *CourseHandler) Delete(w http.ResponseWriter, r *http.Request) {
-// 	// Implementation of delete operation
+// Delete handles deleting a course
+func (ch *StudentHandler) DeleteStudentIDs(w http.ResponseWriter, r *http.Request) {
+	// Implementation of delete operation
 
-// 	var course common.Course
-// 	err := json.NewDecoder(r.Body).Decode(&course)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	var student common.Student
+	err := json.NewDecoder(r.Body).Decode(&student)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-// // Do something with the course data (e.g., delete it from the database)
-// fmt.Printf("Delete course: %+v\n", course)
-// ch.StateManager.DeleteCourse(course.ID) // Assuming course has an ID field
-// // Respond with a success message
-// w.WriteHeader(http.StatusOK)
-// fmt.Fprintf(w, "Course deleted successfully")
+// Do something with the course data (e.g., delete it from the database)
+fmt.Printf("Delete student: %+v\n", student)
+ch.StateManager.DeleteStudentID(student.ID) // Assuming course has an ID field
+// Respond with a success message
+w.WriteHeader(http.StatusOK)
+fmt.Fprintf(w, "student deleted successfully")
+}
