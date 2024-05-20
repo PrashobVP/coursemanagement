@@ -5,7 +5,7 @@
 
 # API testing (Postman)
 
-I have used 10000 port for testing , you can change anything to your requirement.
+I have used 8080 port for testing , you can change anything to your requirement.
 
 Go Libaray :
 

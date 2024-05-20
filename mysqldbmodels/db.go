@@ -13,7 +13,7 @@ type DBClient struct {
 
 func InitializeDatabase() (*DBClient,error) {
 	// Connect to MySQL database
-	dsn := "root:1234@tcp(localhost:3306)/coursemanagement?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:****@tcp(localhost:3306)/coursemanagement?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
 	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	client := &DBClient{Conn: DB}
