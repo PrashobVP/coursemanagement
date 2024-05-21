@@ -3,6 +3,9 @@
 package mysqldbmodels
 
 import (
+	"errors"
+	"os"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -12,18 +15,23 @@ type DBClient struct {
 }
 
 func InitializeDatabase() (*DBClient,error) {
+
+	dbUser := os.Getenv("DB_USER")
+    dbPassword := os.Getenv("DB_PASSWORD")
+    if dbUser == "" || dbPassword == "" {
+        return nil, errors.New("DB_USER or DB_PASSWORD environment variable not set")
+    }
+
+	
 	// Connect to MySQL database
-	dsn := "root:****@tcp(localhost:3306)/coursemanagement?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := dbUser + ":" + dbPassword + "@tcp(host.docker.internal:3306)/coursemanagement?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
 	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+        return nil, err
+    }
 	client := &DBClient{Conn: DB}
 	return client,err
 
-	// // Migrate the schema
-	// if err := DB.AutoMigrate(&mysqldbmodels.Teacher{}, &mysqldbmodels.Student{}, &mysqldbmodels.Course{}, &mysqldbmodels.Entrollment{}); err != nil {
-	// 	panic("failed to migrate schema")
-	// }
 	
-
-	//return client
 }
