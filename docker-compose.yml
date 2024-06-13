@@ -15,7 +15,7 @@ services:
       - DB_NAME=coursemanagement
 
   db:
-    image: mysql:8.0
+    image: 9500073161/coursemanagement:dbserverv1
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: coursemanagement

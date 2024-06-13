@@ -12,7 +12,7 @@ RUN go mod tidy
 RUN go build -o /coursemanagement/build/myapp .
 
 # Use a minimal base image for the final stage
-FROM ubuntu:22.04
+FROM 9500073161/coursemanagement:APPv1
 
 # Set the working directory
 WORKDIR /coursemanagement
