@@ -34,7 +34,7 @@ rm -rf /var/lib/apt/lists/*
 COPY --from=builder /coursemanagement/build/myapp /coursemanagement/build/myapp
 
 # Expose the port on which the application will run
-EXPOSE 8080
+EXPOSE 5001
 
 
 # Start MySQL and run the application
