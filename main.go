@@ -30,5 +30,5 @@ func main() {
 	http.HandleFunc("/entrollment", enrollmentHandler.HandlersEntrollment)
 
 	fmt.Println("Server is running...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":5001", nil))
 }
