@@ -1,28 +1,64 @@
-pipeline{
+pipeline {
     agent any
 
-    environment{
-         // Set Go environment variables
+    environment {
+        // Set Go environment variables
         GO111MODULE = 'on'
-        GOROOT = tool name: 'Go 1.21.6' // Adjust Go version as per your setup
+        GOROOT = tool(name: 'Go 1.21.6') // Adjust Go version as per your setup in Jenkins
         GOPATH = "${env.WORKSPACE}/go"
         PATH = "${env.GOROOT}/bin:${env.PATH}"
     }
 
-    Stages{
+    stages {
 
-        stage(SCM){
-
-            steps{
-
+        stage('SCM') {
+            steps {
                 echo 'Fetching code from Repo'
-
-                git changelog: false, poll: false, url: 'https://github.com/PrashobVP/coursemanagement.git'
+                git 'https://github.com/PrashobVP/coursemanagement.git'
             }
-
-            
         }
 
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    echo 'Installing Go dependencies...'
+                    sh 'go mod download'
+                }
+            }
+        }
 
+        stage('Build') {
+            steps {
+                script {
+                    echo 'Building the Go application...'
+                    sh 'go build -o bin/app'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo 'Running tests...'
+                    sh 'go test ./...'
+                }
+            }
+        }
+
+     
+  
+    }
+
+    post {
+        always {
+            // Archive test results and build artifacts
+            archiveArtifacts artifacts: 'bin/*', allowEmptyArchive: true
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
