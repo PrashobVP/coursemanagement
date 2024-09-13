@@ -1,0 +1,28 @@
+pipeline{
+    agent any
+
+    environment{
+         // Set Go environment variables
+        GO111MODULE = 'on'
+        GOROOT = tool name: 'Go 1.21.6' // Adjust Go version as per your setup
+        GOPATH = "${env.WORKSPACE}/go"
+        PATH = "${env.GOROOT}/bin:${env.PATH}"
+    }
+
+    Stages{
+
+        stage(SCM){
+
+            steps{
+
+                echo 'Fetching code from Repo'
+
+                git changelog: false, poll: false, url: 'https://github.com/PrashobVP/coursemanagement.git'
+            }
+
+            
+        }
+
+
+    }
+}
