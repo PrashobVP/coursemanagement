@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Set Go environment variables
         GO111MODULE = 'on'
-        GOROOT = tool(name: 'Go 1.21.6') // Adjust Go version as per your setup in Jenkins
+        GOROOT = tool(name: 'go') // Adjust Go version as per your setup in Jenkins
         GOPATH = "${env.WORKSPACE}/go"
         PATH = "${env.GOROOT}/bin:${env.PATH}"
     }
@@ -14,7 +14,7 @@ pipeline {
         stage('SCM') {
             steps {
                 echo 'Fetching code from Repo'
-                git 'https://github.com/PrashobVP/coursemanagement.git'
+                git branch: 'master', url: 'https://github.com/PrashobVP/coursemanagement.git'
             }
         }
 
@@ -26,6 +26,32 @@ pipeline {
                 }
             }
         }
+
+        stage('Install Trivy') {
+            steps {
+                echo 'Installing Trivy'
+                sh '''
+                    mkdir -p $HOME/bin
+                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME/bin
+                    export PATH=$HOME/bin:$PATH
+                '''
+            }
+        }
+
+        stage("Trivy: Filesystem scan") {
+            steps {
+                echo 'Running Trivy scan'
+                sh 'trivy filesystem --exit-code 1 --severity HIGH,CRITICAL .'
+            }
+        }
+
+        stage('Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: '--scan . --out .', odcInstallation: 'OWASP'
+            }
+        }
+
+        
 
         stage('Build') {
             steps {
@@ -45,7 +71,50 @@ pipeline {
             }
         }
 
-     
+        stage('BUILD Docker IMAGE for APP & DB server') {
+            steps {
+                echo 'Building the Docker Image'
+                script {
+                    sh 'docker --version'
+                    
+                }
+            }
+        }
+
+        stage('PUSH App image TO Docker HUB') {
+            steps {
+                echo 'Pushing the docker images to Docker Hub'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                        
+                    
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Starting Kubernetes deployment'
+                script {
+                    dir('coursemanagement/K8S') {
+                        sh 'ls -l'
+                        sh '''
+                            kubectl apply -f app-clusterip-service.yaml \
+                                   -f app-deployment.yaml \
+                                   -f app-nodeport-service.yaml \
+                                   -f db-clusterip.yaml \
+                                   -f db-deployment.yaml \
+                                   -f init-sql-configmap.yaml \
+                                   -f mysql-pv-pvc.yaml
+
+                        '''
+                    }
+                }
+            }
+        }
+
+                
   
     }
 
