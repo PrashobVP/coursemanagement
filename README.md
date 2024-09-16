@@ -129,6 +129,9 @@ Thank you. Wish you all the best.
 
 Creating CICD pipeline for Coursemanagement System
 
+1.GIT
+2.Jenkins
+
 
 
 
