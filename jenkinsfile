@@ -99,16 +99,9 @@ pipeline {
                 script {
                     dir('coursemanagement/K8S') {
                         sh 'ls -l'
-                        sh '''
-                            kubectl apply -f app-clusterip-service.yaml \
-                                   -f app-deployment.yaml \
-                                   -f app-nodeport-service.yaml \
-                                   -f db-clusterip.yaml \
-                                   -f db-deployment.yaml \
-                                   -f init-sql-configmap.yaml \
-                                   -f mysql-pv-pvc.yaml
+                        sh kubectl apply -f app-deployment.yaml 
 
-                        '''
+                        
                     }
                 }
             }
